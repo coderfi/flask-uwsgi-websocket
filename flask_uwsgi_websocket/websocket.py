@@ -84,7 +84,9 @@ class WebSocket(object):
                 kwargs[k] = ''
 
         # constructing uwsgi arguments
-        uwsgi_args = ' '.join(['--{0} {1}'.format(k,v) for k,v in kwargs.items()])
+        uwsgi_args = ' '.join(['--{0} {1}'.format(
+                                    k.replace('_', '-'),
+                                    v) for k,v in kwargs.items()])
         args = 'uwsgi --http {0}:{1} --http-websockets {2} --wsgi {3}'.format(host, port, uwsgi_args, app)
 
         print(args)
