@@ -1,3 +1,5 @@
+from flask import current_app
+
 from gevent import killall, sleep, spawn, wait
 from gevent.event import Event
 from gevent.queue import Queue
@@ -57,7 +59,7 @@ class GeventWebSocketMiddleware(WebSocketMiddleware):
                              send_queue, recv_event, recv_queue, self.websocket.timeout)
 
         # spawn handler
-        handler = spawn(handler, client)
+        handler = spawn(handler_context_wrapper, handler, client, self.websocket.app)
 
         # spawn recv listener
         def listener(client):
@@ -100,3 +102,13 @@ class GeventWebSocketMiddleware(WebSocketMiddleware):
 
 class GeventWebSocket(WebSocket):
     middleware = GeventWebSocketMiddleware
+
+
+def handler_context_wrapper(handler, client, app):
+    with app.app_context():
+        #now flask.current_app will be bound :)
+        with current_app.request_context(client.environ):
+            #and now flask.request is bound, should the handler need it :)
+            handler(client)
+
+

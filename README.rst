@@ -147,16 +147,20 @@ WebSocket client abstraction with fully non-blocking methods.
 ``connected``
 
 
-Advanced Usage
---------------
-Normally websocket routes happen outside of the normal request context. You can
-get a request context in your websocket handler by using
-``app.request_context``::
+Application and Request Context
+-------------------------------
+
+The  ``flask_uwsgi_websocket.GeventWebSocketMiddleware`` automatically wraps the
+websocket handler call inside the flask application and request context.
+This means the ``flask.current_app`` and ``flask.request`` LocalProxy instances
+will be bounded and all Flask extensions activated::
+
+    from flask import current_app, request
 
     app = Flask(__name__)
     ws = GeventWebSocket(app)
 
     @ws.route('/websocket')
     def websocket(ws):
-        with app.request_context(ws.environ):
-            print request.args
+        print current_app   #<Flask>
+        print request       #<Request 'http://localhost:5000/websocket' [GET]>
