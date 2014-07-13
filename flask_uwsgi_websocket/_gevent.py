@@ -2,7 +2,7 @@ from flask import current_app
 
 from gevent import killall, sleep, spawn, wait
 from gevent.event import Event
-from gevent.queue import Queue
+from gevent.queue import Queue, Empty
 from gevent.select import select
 from gevent.monkey import patch_all; patch_all()
 import uuid
@@ -29,7 +29,20 @@ class GeventWebSocketClient(object):
         self.send_event.set()
 
     def receive(self):
+        """ Receives a message from the websocket (blocking).
+        :return the message
+        """
         return self.recv_queue.get()
+
+    def receive_nb(self):
+        """ Receives a message from the websocket (non-blocking).
+        :return the message or None if no message was available
+                immediately
+        """
+        try:
+            return self.recv_queue.get_nowait()
+        except Empty:
+            return None
 
     def close(self):
         self.connected = False
