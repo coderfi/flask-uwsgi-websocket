@@ -29,20 +29,21 @@ class GeventWebSocketClient(object):
         self.send_event.set()
 
     def receive(self):
-        """ Receives a message from the websocket (blocking).
+        """ Receives a message from the websocket.
+        Although the underlying bytes are received via non blocking i/o,
+        this method will block if there are no waiting messages.
         :return the message
         """
         return self.recv_queue.get()
 
-    def receive_nb(self):
-        """ Receives a message from the websocket (non-blocking).
-        :return the message or None if no message was available
-                immediately
+    def receive_nowait(self):
+        """ Receives a message from the websocket.
+        This differs from the receive() method in that, if there are
+        no waiting messages, this method will quickly return.
+        :return the messag
+        :raise gevent.queue.Empty if no message was immediately available
         """
-        try:
-            return self.recv_queue.get_nowait()
-        except Empty:
-            return None
+        return self.recv_queue.get_nowait()
 
     def close(self):
         self.connected = False

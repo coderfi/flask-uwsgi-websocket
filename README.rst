@@ -138,9 +138,13 @@ Automatically performs WebSocket handshake and passes a ``GeventWebSocketClient`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 WebSocket client abstraction with fully non-blocking methods.
 
+receive() and receive_nowait() differs in that receive_nowait()
+will raise a ``gevent.queue.Empty`` exception immediately
+if there is no message available.
+
 ``receive()``
 
-``receive_nb()``
+``receive_nowait()``
 
 ``send(msg)``
 
