@@ -140,6 +140,8 @@ WebSocket client abstraction with fully non-blocking methods.
 
 ``receive()``
 
+``receive_nb()``
+
 ``send(msg)``
 
 ``close()``
